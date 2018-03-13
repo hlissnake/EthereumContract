@@ -34,8 +34,8 @@ contract Crowdfunds {
     }
 
     // 众筹参与者付款，所付款会自动补贴其他投资者，以达到平分
-    function contribute(address initalFunder) public payable {
-        Crowd storage crowd = crowds[initalFunder];
+    function contribute(address initalFunderAddress) public payable {
+        Crowd storage crowd = crowds[initalFunderAddress];
         Fund[] storage funders = crowd.funders;
         uint nextFund = crowd.nextFund;
         
