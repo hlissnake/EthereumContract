@@ -20,14 +20,13 @@ contract MultiAuthAccount {
         _;
     }
     
-    modifier isNotOwner() {
+    modifier isAuthorizer() {
         require(msg.sender != owner);
         _;
     }
     
     function MultiAuthAccount() public payable {
         owner = msg.sender;
-        authorizers.push(msg.sender);
     }
     
     function addAuthKey(address newAuthorizer) public isOwner() {
@@ -41,7 +40,7 @@ contract MultiAuthAccount {
         return transactId;
     }
     
-    function approveTransact(bytes32 transactId) public isNotOwner() {
+    function approveTransact(bytes32 transactId) public isAuthorizer() {
         Transact storage transact = transacts[transactId];
         transact.approved = true;
         
@@ -52,6 +51,12 @@ contract MultiAuthAccount {
         }
         
         delete transacts[transactId];
+    }
+    
+    function approveByOtherKey(address signer, bytes32 transactId, uint8 v, bytes32 r, bytes32 s) public {
+        if(verifySignature(signer, keccak256(now), v, r, s)) {
+            approveTransact(transactId);
+        }
     }
     
     function verifySignature(address signer, bytes32 msgHash, uint8 v, bytes32 r, bytes32 s) public pure returns (bool) {
