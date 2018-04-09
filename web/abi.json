@@ -1,0 +1,32 @@
+[
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "msgHash",
+                "type": "bytes32"
+            },
+            {
+                "name": "v",
+                "type": "uint8"
+            },
+            {
+                "name": "r",
+                "type": "bytes32"
+            },
+            {
+                "name": "s",
+                "type": "bytes32"
+            }
+        ],
+        "name": "RecoverAddress",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "type": "function"
+    }
+]
