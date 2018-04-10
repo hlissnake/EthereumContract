@@ -1,6 +1,8 @@
 pragma solidity ^0.4.18;
 
-contract MultiAuthAccount {
+import "./Owned.sol";
+
+contract MultiAuthAccount is Owned {
     
     event signatureVerified(address signer, bool result);
     
@@ -11,17 +13,11 @@ contract MultiAuthAccount {
         bool approved;
     }
     
-    address public owner;
-    address[] private authorizers;
+    mapping(address => bool) private authorizers;
     mapping(bytes32 => Transact) transacts;
-    
-    modifier isOwner() {
-        require(msg.sender == owner);
-        _;
-    }
-    
-    modifier isAuthorizer() {
-        require(msg.sender != owner);
+
+    modifier isAuthorizer(address authorizer) {
+        require(authorizers[authorizer]);
         _;
     }
     
@@ -29,18 +25,18 @@ contract MultiAuthAccount {
         owner = msg.sender;
     }
     
-    function addAuthKey(address newAuthorizer) public isOwner() {
-        authorizers.push(newAuthorizer);
+    function addAuthKey(address newAuthorizer) public onlyOwner() {
+        authorizers[newAuthorizer] = true;
     }
     
-    function createTransact(address destination, bytes data) public payable isOwner() returns(bytes32) {
+    function createTransaction(address destination, bytes data) public payable onlyOwner() returns(bytes32) {
         bytes32 transactId = keccak256(now);
         transacts[transactId] = Transact(destination, data, msg.value, false);
         
         return transactId;
     }
-    
-    function approveTransact(bytes32 transactId) public isAuthorizer() {
+
+    function approveTransaction(bytes32 transactId) public isAuthorizer(msg.sender) {
         Transact storage transact = transacts[transactId];
         transact.approved = true;
         
@@ -53,12 +49,25 @@ contract MultiAuthAccount {
         delete transacts[transactId];
     }
     
-    function approveByOtherKey(address signer, bytes32 transactId, uint8 v, bytes32 r, bytes32 s) public {
-        if(verifySignature(signer, keccak256(now), v, r, s)) {
-            approveTransact(transactId);
-        }
+    // ------------------------------------------------------------------------
+    // Execute transaction with meta transaction signatures
+    // ------------------------------------------------------------------------
+    function executeTransaction(address destination, bytes executeData, address signer, bytes signerData, uint8 v, bytes32 r, bytes32 s) public payable onlyOwner() isAuthorizer(signer){
+        require(verifySignature(signer, keccak256(signerData), v, r, s));
+        require(compareBytes(executeData, signerData));
+
+        require(destination.call(executeData));
     }
-    
+
+    function compareBytes(bytes a, bytes b) private pure returns(bool) {
+        require(a.length == b.length);
+        uint len = a.length;
+        for(uint i = 0; i < len; i++) {
+            require(a[i] == b[i]);
+        }
+        return true;
+    }
+
     function verifySignature(address signer, bytes32 msgHash, uint8 v, bytes32 r, bytes32 s) public pure returns (bool) {
         return signer == ecrecover(msgHash, v, r, s);
     }

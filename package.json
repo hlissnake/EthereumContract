@@ -1,0 +1,22 @@
+{
+  "name": "test-contract",
+  "version": "1.0.0",
+  "description": "Demo 演示步骤，使用Remix来模拟测试，后期会放置在Private network测试",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hlissnake/EthereumContract.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hlissnake/EthereumContract/issues"
+  },
+  "homepage": "https://github.com/hlissnake/EthereumContract#readme"
+}

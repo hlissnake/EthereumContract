@@ -15,7 +15,7 @@ contract Crowdfunds {
     }
 
     uint8 private decimals;
-    mapping(address => Crowd) public crowds;
+    mapping(address => Crowd) private crowds;
     
     function Crowdfunds() public {
         decimals = 18;
@@ -50,7 +50,7 @@ contract Crowdfunds {
         }
 
         funders.push(Fund({
-            funder: msg.sender, 
+            funder: msg.sender,
             withDrawBalance: 0
         }));
         crowd.nextFund = crowd.initalFund / (funders.length + 1);
@@ -66,12 +66,29 @@ contract Crowdfunds {
             if (msg.sender == fund.funder) {
                 uint amount = fund.withDrawBalance;
                 fund.withDrawBalance = 0;
-                
-                if (!msg.sender.send(amount)) {
-                    fund.withDrawBalance = amount;
-                    return;
-                }
+                msg.sender.transfer(amount);
             }
         }
+    }
+    
+    function checkBalance(address initalFunder) public view returns(uint) {
+        Crowd memory crowd = crowds[initalFunder];
+        
+        for (uint i = 0; i < crowd.funders.length; i++) {
+            Fund memory fund = crowd.funders[i];
+            
+            if (msg.sender == fund.funder) {
+                return fund.withDrawBalance;
+            }
+        }
+    }
+
+    function checkNextFund(address initalFunder) public view returns(uint) {
+        Crowd memory crowd = crowds[initalFunder];
+        return crowd.nextFund;
+    }
+    
+    function () public payable {
+        revert();
     }
 }
