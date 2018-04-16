@@ -1,0 +1,26 @@
+<html>
+    <head>
+        
+    </head>
+    <body>
+        <h4>First, using owner address to add auther</h4>
+        <lable>Auth address</lable><input type="text" id="auther" value="0x9097F0B0aA1de326F3431703a97932D503cb13EE"/>
+        <button id="addauth">Add auther</button>
+        <lable>Sender address</lable><input type="text" id="sender"/>
+
+        <h4>Then, specify the destination address and the ethers want send</h4>
+        <lable>Destinaton address</lable><input type="text" id="destination" value="0xcA67856A888dd0eDf2d1Dd17A8d96374A8F9bA86"/>
+        <lable>Ether value</lable><input type="text" id="ether"/>
+
+        <h4>And switch to auther's account then sign those information</h4>
+        <button id="sign">Pre-sign tx</button>
+
+        <lable>Signer address</lable><input type="text" id="signer"/>
+        <textarea id="signedData"></textarea>
+
+        <h4>Finally, switch to the first owner account, trigger tx with signed data</h4>
+        <button id="execute">Execute meta tx</button>
+
+        <script src="../dist/main.js"></script>
+    </body>
+</html>

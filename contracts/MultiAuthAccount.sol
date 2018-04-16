@@ -12,7 +12,9 @@ contract MultiAuthAccount is Owned {
         uint value;
         bool approved;
     }
-    
+    // Note: This is a local nonce.
+    // Different from the nonce defined w/in protocol.
+    mapping(address => uint) private nonce;
     mapping(address => bool) private authorizers;
     mapping(bytes32 => Transact) transacts;
 
@@ -22,7 +24,7 @@ contract MultiAuthAccount is Owned {
     }
     
     function MultiAuthAccount() public payable {
-        owner = msg.sender;
+        authorizers[msg.sender] = true;
     }
     
     function addAuthKey(address newAuthorizer) public onlyOwner() {
@@ -47,28 +49,5 @@ contract MultiAuthAccount is Owned {
         }
         
         delete transacts[transactId];
-    }
-    
-    // ------------------------------------------------------------------------
-    // Execute transaction with meta transaction signatures
-    // ------------------------------------------------------------------------
-    function executeTransaction(address destination, bytes executeData, address signer, bytes signerData, uint8 v, bytes32 r, bytes32 s) public payable onlyOwner() isAuthorizer(signer){
-        require(verifySignature(signer, keccak256(signerData), v, r, s));
-        require(compareBytes(executeData, signerData));
-
-        require(destination.call(executeData));
-    }
-
-    function compareBytes(bytes a, bytes b) private pure returns(bool) {
-        require(a.length == b.length);
-        uint len = a.length;
-        for(uint i = 0; i < len; i++) {
-            require(a[i] == b[i]);
-        }
-        return true;
-    }
-
-    function verifySignature(address signer, bytes32 msgHash, uint8 v, bytes32 r, bytes32 s) public pure returns (bool) {
-        return signer == ecrecover(msgHash, v, r, s);
     }
 }

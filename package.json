@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "http-server ./",
+    "build": "webpack"
   },
   "repository": {
     "type": "git",
@@ -18,5 +19,22 @@
   "bugs": {
     "url": "https://github.com/hlissnake/EthereumContract/issues"
   },
-  "homepage": "https://github.com/hlissnake/EthereumContract#readme"
+  "homepage": "https://github.com/hlissnake/EthereumContract#readme",
+  "dependencies": {
+    "eth-lightwallet": "^3.0.1",
+    "express": "^4.16.3",
+    "file-loader": "^1.1.11",
+    "truffle-hdwallet-provider": "0.0.3",
+    "web3": "^1.0.0-beta.33"
+  },
+  "devDependencies": {
+    "http-server": "^0.11.1",
+    "transform-loader": "^0.2.4",
+    "json-loader": "^0.5.7",
+    "babel-cli": "^6.4.0",
+    "babel-core": "^6.3.26",
+    "babel-loader": "^6.2.0",
+    "webpack-cli": "^2.0.14",
+    "webpack": "^4.5.0"
+  }
 }
