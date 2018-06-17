@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 import "./Owned.sol";
 
-contract MultiAuthAccount is Owned {
+contract MultiAuthWallet is Owned {
     
     event signatureVerified(address signer, bool result);
     

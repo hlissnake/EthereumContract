@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 import "./Owned.sol";
 
-contract MetaMultiAuthAccount is Owned {
+contract MetaTxController is Owned {
     
     // Note: This is a local nonce.
     // Different from the nonce defined w/in protocol.
@@ -14,7 +14,7 @@ contract MetaMultiAuthAccount is Owned {
         _;
     }
     
-    function MetaMultiAuthAccount() public payable {
+    function MetaTxController() public payable {
         authorizers[msg.sender] = true;
     }
     
@@ -26,13 +26,13 @@ contract MetaMultiAuthAccount is Owned {
     // Execute transaction with meta transaction signatures
     // meta transaction data should be like this: sender :: destination :: auther :: value :: nonce
     // ------------------------------------------------------------------------
-    function executeTransaction(address destination, address auther, uint8 v, bytes32 r, bytes32 s) public payable onlyOwner() isAuthorizer(auther){
+    function executeTransaction(address destination, address auther, uint value, uint8 v, bytes32 r, bytes32 s) public onlyOwner() isAuthorizer(auther){
         
-        bytes32 hash = sha3Hash(msg.sender, destination, auther, msg.value);
+        bytes32 hash = sha3Hash(msg.sender, destination, auther, value);
         require(auther == recoverAddress(hash, v, r, s));
         nonce[auther]++;
 
-        destination.transfer(msg.value);
+        destination.transfer(value);
     }
 
     function getNonce(address auther) public view isAuthorizer(msg.sender) returns(uint) {
@@ -47,7 +47,14 @@ contract MetaMultiAuthAccount is Owned {
     }
 
     function recoverAddress(bytes32 msgHash, uint8 v1, bytes32 r, bytes32 s) public pure returns (address) {
-        uint8 v = uint8(v1) + 27;
+        uint8 v = uint8(v1);
         return ecrecover(msgHash, v, r, s);
+    }
+
+    // ------------------------------------------------------------------------
+    // Purchase ETH
+    // ------------------------------------------------------------------------
+    function () public payable {
+
     }
 }
